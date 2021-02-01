@@ -1,4 +1,4 @@
-package ch.fhnw.webfr.flashcardrest;
+package ch.fhnw.webfr.flashcard;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
