@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +23,6 @@ import ch.fhnw.webfr.flashcard.persistence.QuestionnaireRepository;
 @RestController
 @RequestMapping("/questionnaires")
 public class QuestionnaireController {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private QuestionnaireRepository questionnaireRepository;
 
