@@ -5,13 +5,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import javax.print.attribute.standard.Media;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -123,5 +126,80 @@ public class QuestionnaireControllerTest {
 			.andExpect(status().isPreconditionFailed());
 
 		Mockito.verify(questionnaireRepositoryMock, times(0)).save(q);
+	}
+
+	@Test
+	public void testUpdated() throws Exception {
+		Questionnaire q = new QuestionnaireBuilder("1").description("Description1").title("Title1").build();
+		Questionnaire uq = new QuestionnaireBuilder("1").description("UpdateDescription").title("Title1").build();
+
+		when(questionnaireRepositoryMock.existsById("1")).thenReturn(true);
+		when(questionnaireRepositoryMock.findById("1")).thenReturn(Optional.of(q));
+		when(questionnaireRepositoryMock.save(uq)).thenReturn(uq);
+
+		mockMvc.perform(put("/questionnaires/{id}", "1")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(TestUtil.convertObjectToJsonBytes(uq)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id", is("1")))
+			.andExpect(jsonPath("$.title", is("Title1")))
+			.andExpect(jsonPath("$.description", is("UpdateDescription")));
+
+		Mockito.verify(questionnaireRepositoryMock, times(1)).existsById("1");
+		Mockito.verify(questionnaireRepositoryMock, times(1)).save(uq);
+	}
+
+	@Test
+	public void testUpdated_Without_Title() throws Exception {
+		Questionnaire q = new QuestionnaireBuilder("1").description("Description1").title("").build();
+
+		mockMvc.perform(put("/questionnaires/{id}", "1")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(TestUtil.convertObjectToJsonBytes(q)))
+			.andExpect(status().isPreconditionFailed());
+
+		Mockito.verify(questionnaireRepositoryMock, times(0)).existsById("1");			
+		Mockito.verify(questionnaireRepositoryMock, times(0)).save(q);
+	}
+
+	@Test
+	public void testUpdated_Does_Not_Exist() throws Exception {
+		Questionnaire q = new QuestionnaireBuilder("1").description("Description1").title("Title1").build();
+
+		when(questionnaireRepositoryMock.existsById("2")).thenReturn(false);
+
+		mockMvc.perform(put("/questionnaires/{id}", "2")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(TestUtil.convertObjectToJsonBytes(q)))
+			.andExpect(status().isNotFound());
+
+		Mockito.verify(questionnaireRepositoryMock, times(0)).save(q);
+		Mockito.verify(questionnaireRepositoryMock, times(1)).existsById("2");
+	}
+
+	@Test
+	public void testDelete() throws Exception {
+		when(questionnaireRepositoryMock.existsById("1")).thenReturn(true);
+
+		mockMvc.perform(delete("/questionnaires/{id}", "1")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(""))
+			.andExpect(status().isNoContent());
+
+		Mockito.verify(questionnaireRepositoryMock, times(1)).existsById("1");
+		Mockito.verify(questionnaireRepositoryMock, times(1)).deleteById("1");
+	}
+
+	@Test
+	public void testDelete_NotFound() throws Exception {
+		when(questionnaireRepositoryMock.existsById("1")).thenReturn(false);
+
+		mockMvc.perform(delete("/questionnaires/{id}", "1")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(""))
+			.andExpect(status().isNotFound());
+
+		Mockito.verify(questionnaireRepositoryMock, times(1)).existsById("1");
+		Mockito.verify(questionnaireRepositoryMock, times(0)).deleteById("1");
 	}
 }
