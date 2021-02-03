@@ -96,4 +96,32 @@ public class QuestionnaireControllerTest {
 		Mockito.verify(questionnaireRepositoryMock, times(1)).existsById("1");
 		Mockito.verify(questionnaireRepositoryMock, times(0)).findById("1");
 	}
+
+	@Test
+	public void testCreate() throws Exception {
+		Questionnaire q = new QuestionnaireBuilder("1").description("Description1").title("Title1").build();
+		when(questionnaireRepositoryMock.save(q)).thenReturn(q);
+
+		mockMvc.perform(post("/questionnaires")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(TestUtil.convertObjectToJsonBytes(q)))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.id", is("1")))
+			.andExpect(jsonPath("$.title", is("Title1")))
+			.andExpect(jsonPath("$.description", is("Description1")));
+
+		Mockito.verify(questionnaireRepositoryMock, times(1)).save(q);
+	}
+
+	@Test
+	public void testCreateWithoutTitle() throws Exception {
+		Questionnaire q = new QuestionnaireBuilder("1").description("Description1").title("").build();
+
+		mockMvc.perform(post("/questionnaires")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(TestUtil.convertObjectToJsonBytes(q)))
+			.andExpect(status().isForbidden());
+
+		Mockito.verify(questionnaireRepositoryMock, times(0)).save(q);
+	}
 }

@@ -1,5 +1,9 @@
 package ch.fhnw.webfr.flashcard.domain;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,9 +11,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Questionnaire {
     @Id
     private String id;
-    
+	
+	@NotNull
+	@NotBlank
+	@Size(min = 2, max = 20)
     private String  title;
-    
+	
+	@NotNull
+	@NotBlank
+	@Size(min = 5, max = 50)
     private String description;
     
     public void setId(String id) {
