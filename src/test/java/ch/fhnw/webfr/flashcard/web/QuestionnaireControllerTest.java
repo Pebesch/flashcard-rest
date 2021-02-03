@@ -120,7 +120,7 @@ public class QuestionnaireControllerTest {
 		mockMvc.perform(post("/questionnaires")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(TestUtil.convertObjectToJsonBytes(q)))
-			.andExpect(status().isForbidden());
+			.andExpect(status().isPreconditionFailed());
 
 		Mockito.verify(questionnaireRepositoryMock, times(0)).save(q);
 	}
