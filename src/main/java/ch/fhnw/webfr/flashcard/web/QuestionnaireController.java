@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class QuestionnaireController {
     @Autowired
     private QuestionnaireRepository questionnaireRepository;
 
+    @CrossOrigin
     @GetMapping
     public ResponseEntity<List<Questionnaire>> findAll() {
         return new ResponseEntity<List<Questionnaire>>(questionnaireRepository.findAll(), HttpStatus.OK);
