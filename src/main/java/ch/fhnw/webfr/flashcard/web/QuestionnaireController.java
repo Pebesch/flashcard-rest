@@ -21,13 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.fhnw.webfr.flashcard.domain.Questionnaire;
 import ch.fhnw.webfr.flashcard.persistence.QuestionnaireRepository;
 
+
+@CrossOrigin
 @RestController
 @RequestMapping("/questionnaires")
 public class QuestionnaireController {
     @Autowired
     private QuestionnaireRepository questionnaireRepository;
 
-    @CrossOrigin
     @GetMapping
     public ResponseEntity<List<Questionnaire>> findAll() {
         return new ResponseEntity<List<Questionnaire>>(questionnaireRepository.findAll(), HttpStatus.OK);
